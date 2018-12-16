@@ -2,16 +2,40 @@
 import discord
 from urllib.request import urlopen
 import sys
+import json
 
 TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 
+##probably want to move this to local storage to not make too many reqeusts
+##and just update once a day
+ItemIdDBUrl = "https://rsbuddy.com/exchange/names.json"
+
+
+
 client = discord.Client()
 
-def processMessage(string):
-    link = string.split(" ")[-1]
-    item = string.rsplit(' ', 1)[0].split(' ', 1)[1]
+def processMessage(str):
+    link = str.split(" ")[-1]
+    item = str.rsplit(' ', 1)[0].split(' ', 1)[1]
     return item, link
 
+def finditemId(str):
+    id = -1
+    data = ""
+    with urlopen(ItemIdDBUrl) as url:
+        data = json.loads(url.read().decode())
+
+
+    for item in data:
+        #print(data[item]['name'])
+        if(data[item]['name'].lower()==str.lower()):
+            return item
+
+    print(str)
+    return id
+
+def findValue(id):
+    return 0
 
 @client.event
 async def on_message(message):
@@ -30,9 +54,16 @@ async def on_message(message):
             ##check if valid link
             urlopen(link)
 
+            print('link is valid')
             ##check if valid item & price
-            
 
+            ItemId = finditemId(item)
+
+            print('item is valid: '  + ItemId)
+
+            #find value of item
+
+            value = findValue(ItemId)
 
             msg = 'Adding '+ item +' to user {0.author.mention}'.format(message)
             await client.send_message(message.channel, msg)
