@@ -9,7 +9,7 @@ TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 ##probably want to move this to local storage to not make too many reqeusts
 ##and just update once a day
 ItemIdDBUrl = "https://rsbuddy.com/exchange/names.json"
-
+PriceUrl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
 
 
 client = discord.Client()
@@ -33,9 +33,27 @@ def finditemId(str):
 
     print(str)
     return id
+def convertToNumber(st):
+    multiplier = 1
+    if(st[-1]=='k'):
+        multiplier = 1000
+        st = st[:-1]
+    elif(st[-1]=='m'):
+        multiplier = 1000000
+        st = st[:-1]
+    elif(st[-1]=='b'):
+        multiplier = 1000000000
+        st = st[:-1]
+    return int(float(st) * multiplier)
+
 
 def findValue(id):
-    return 0
+    price = 0
+    with urlopen(PriceUrl + id) as url:
+        data = json.loads(url.read().decode())
+    price = data['item']['current']['price']
+    value = convertToNumber(price.lower().strip())
+    return price, value
 
 @client.event
 async def on_message(message):
@@ -63,9 +81,9 @@ async def on_message(message):
 
             #find value of item
 
-            value = findValue(ItemId)
+            shortprice,value = findValue(ItemId)
 
-            msg = 'Adding '+ item +' to user {0.author.mention}'.format(message)
+            msg = 'Adding '+ item +' to user {0.author.mention} '.format(message) + ' value: ' + shortprice
             await client.send_message(message.channel, msg)
 
         except:
