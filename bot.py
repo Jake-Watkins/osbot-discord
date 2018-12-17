@@ -64,6 +64,8 @@ def findValue(id):
     value = convertToNumber(price.lower().strip())
     return price, value
 
+
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -75,7 +77,7 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
 
 
-    if message.content.startswith('$add'):
+    if message.content.lower().startswith('$add'):
         item, link = processMessage(message.content)
         try :
             ##check if valid link
@@ -96,7 +98,7 @@ async def on_message(message):
             print("message is valid")
             now = datetime.datetime.now()
             date = [str(now.month),'/' ,str(now.day),'/', str(now.year)]
-            row = ['{0.author.mention} '.format(message),item, value, link, "".join(date)]
+            row = [message.author.id,item, value, link, "".join(date)]
             sheet.insert_row(row, 2)
             await client.send_message(message.channel, msg)
 
@@ -107,8 +109,17 @@ async def on_message(message):
             await client.send_message(message.channel, msg)
 
 
-    if message.content.startswith('$lookup'):
-        msg = 'need to impliment'.format(message)
+    if message.content.lower().startswith('$lookup'):
+        id = message.mentions[0].id
+        idcol = sheet.col_values(1)
+        pcol = sheet.col_values(3)
+        sum = 0
+        for i in range(1, len(idcol)):
+            if id == idcol[i]:
+                sum = sum + int(pcol[i].replace(',', ""))
+
+        msg = str("{:,}".format(sum))+ "gp total"
+
         await client.send_message(message.channel, msg)
 
 
