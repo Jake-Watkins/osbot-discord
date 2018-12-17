@@ -118,7 +118,7 @@ async def on_message(message):
             if id == idcol[i]:
                 sum = sum + int(pcol[i].replace(',', ""))
 
-        msg = str("{:,}".format(sum))+ "gp total"
+        msg = '{0.author.mention}'.format(message) + "has contributed " + str("{:,}".format(sum))+ "gp total"
 
         await client.send_message(message.channel, msg)
 
