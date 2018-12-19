@@ -118,7 +118,6 @@ async def on_message(message):
 
         await client.send_message(message.channel, "finished testing".format(message))
 
-
     if message.content.lower().startswith('$add'):
         item, link = processMessage(message.content)
         try :
@@ -150,7 +149,6 @@ async def on_message(message):
             msg = 'last item was not a valid link, please try again with format $add item name link: '.format(message)
             await client.send_message(message.channel, msg)
 
-
     if message.content.lower().startswith('$lookup'):
         id = message.mentions[0].id
         idcol = sheet.col_values(1)
@@ -164,7 +162,9 @@ async def on_message(message):
 
         await client.send_message(message.channel, msg)
 
-
+    if message.content.lower().startswith('$fastestlevel'):
+        username = items[1]
+        print(username)
 
 @client.event
 async def on_ready():
