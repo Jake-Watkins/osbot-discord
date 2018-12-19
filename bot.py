@@ -26,11 +26,13 @@ pp = pprint.PrettyPrinter()
 cwd = os.getcwd()
 g = git.cmd.Git(cwd)
 message = ""
+
 def loadItems():
     data = ""
     with urlopen(ItemIdDBUrl) as url:
         data = json.loads(url.read().decode())
-    return datas
+    return data
+
 data = loadItems()
 
 def splitMessage(str):
@@ -82,7 +84,7 @@ async def on_message(message):
         return
 
     (items, length) = splitMessage(message)
-    
+
     if message.content.startswith('$update'):
             client.change_presence(game = discord.Game(name = "updating"), status = discord.Status("idle"), afk = True)
             await client.send_message(message.channel, 'updating...'.format(message))
