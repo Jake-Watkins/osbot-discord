@@ -83,7 +83,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    (items, length) = splitMessage(message)
+    (items, length) = splitMessage(message.content)
 
     if message.content.startswith('$update'):
             client.change_presence(game = discord.Game(name = "updating"), status = discord.Status("idle"), afk = True)
