@@ -76,6 +76,11 @@ async def on_message(message):
         msg = 'need to impliment'.format(message)
         await client.send_message(message.channel, msg)
 
+    if message.content.lower().startswith('$listdrops'):
+        id = message.mentions[0].id
+        idcol = sheet.col_values(1)
+            with urlopen(PriceUrl + id) as url:
+                data = json.loads(url.read().decode())
 
     if message.content.lower().startswith('$add'):
         item, link = processMessage(message.content)
@@ -118,7 +123,7 @@ async def on_message(message):
             if id == idcol[i]:
                 sum = sum + int(pcol[i].replace(',', ""))
 
-        msg = '{0.author.mention}'.format(message) + "has contributed " + str("{:,}".format(sum))+ "gp total"
+        msg = '{0.author.mention}'.format(message) + " has contributed " + str("{:,}".format(sum))+ "gp total"
 
         await client.send_message(message.channel, msg)
 
