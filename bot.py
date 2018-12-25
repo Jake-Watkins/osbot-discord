@@ -154,7 +154,7 @@ async def on_message(message):
     ]
     }
     }
-        await client.send_message(message.channel, msg)
+        await client.send_message(message.channel, msg.format(message))
 
 
     if message.content.lower().startswith('$add'):
