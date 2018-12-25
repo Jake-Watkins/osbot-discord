@@ -8,4 +8,4 @@ intended features:
 
 
 requires :
-pip3 install discord.py gspread oath2client
+pip3 install discord.py gspread oath2client GitPython
