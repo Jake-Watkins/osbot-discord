@@ -163,6 +163,6 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-    client.change_presence(*, game = None, status = None, afk = False)
+    client.change_presence(game = None, status = None, afk = False)
 
 client.run(TOKEN)
