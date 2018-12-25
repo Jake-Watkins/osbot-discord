@@ -99,7 +99,7 @@ async def on_message(message):
 
         for row in droplist:
             new_row = []
-            new_row.append(row[1])
+            new_row.append("[" + row[1] + "](" + row[3] + ")")
             await client.send_message(message.channel, new_row)
 
 
