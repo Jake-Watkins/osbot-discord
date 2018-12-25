@@ -79,7 +79,14 @@ async def on_message(message):
     if message.content.lower().startswith('$listdrops'):
         id = message.mentions[0].id
         idcol = sheet.col_values(1)
-        print(typeof(idcol))
+        droplist = []
+        for i in range(1, len(idcol)):
+            if id == idcol[i]:
+                row = sheet.row_values(i)
+                droplist.append(row)
+
+        for row in droplist:
+            await client.send_message(message.channel, row)
 
 
     if message.content.lower().startswith('$add'):
