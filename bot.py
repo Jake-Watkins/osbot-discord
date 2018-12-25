@@ -80,12 +80,12 @@ async def on_message(message):
             await client.send_message(message.channel, 'updating...'.format(message))
             await client.send_message(message.channel, 'pulling...'.format(message))
             g.pull ()
-            await client.send_message(message.channel, 'restarting.........'.format(message))
+            await client.send_message(message.channel, 'restarting...'.format(message))
 
             os.execl(sys.executable, sys.executable, *sys.argv)
 
     if message.content.startswith('$help'):
-        msg = '$help, $listdrops, $add, $lookup'.format(message)
+        msg = '$help, $listdrops, $add, $lookup, $update'.format(message)
         await client.send_message(message.channel, msg)
 
     if message.content.lower().startswith('$listdrops'):
