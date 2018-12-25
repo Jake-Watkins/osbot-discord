@@ -99,7 +99,7 @@ async def on_message(message):
         embed = discord.Embed(title="Drops", description="", color=0x00ff00)
         for row in droplist:
             new_row = []
-            embed.add_field(name="["+row[1] + "](" + row[3] + ") [named links](https://discordapp.com)", value=row[2], inline=False)
+            embed.add_field(value="["+row[1] + "](" + row[3] + ")", name=row[2], inline=False)
 
         await client.send_message(message.channel, embed=embed)
 
