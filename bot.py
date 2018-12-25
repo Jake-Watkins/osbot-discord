@@ -96,7 +96,7 @@ async def on_message(message):
             if id == idcol[i]:
                 row = sheet.row_values(i+1)
                 droplist.append(row)
-        embed = discord.Embed(title="Drops", description="", color=0x00ff00)
+        embed = discord.Embed(title="Drops", description="[named links](https://discordapp.com)", color=0x00ff00)
         for row in droplist:
             new_row = []
             embed.add_field(name="["+row[1] + "](" + row[3] + ")", value=row[2], inline=False)
