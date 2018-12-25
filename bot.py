@@ -23,7 +23,8 @@ creds = ServiceAccountCredentials.from_json_keyfile_name('OsBot.json', scope)
 gspreadclient = gspread.authorize(creds)
 sheet = gspreadclient.open('CC Drops').sheet1
 pp = pprint.PrettyPrinter()
-g = git.cmd.Git(git_dir)
+cwd = os.getcwd()
+g = git.cmd.Git(cwd)
 
 
 def processMessage(str):
@@ -78,7 +79,7 @@ async def on_message(message):
     if message.content.startswith('$update'):
             await client.send_message(message.channel, 'updating...'.format(message))
             await client.send_message(message.channel, 'pulling...'.format(message))
-            g.pull()
+            g.pull ()
             await client.send_message(message.channel, 'restarting...'.format(message))
 
             os.execl(sys.executable, sys.executable, *sys.argv)
