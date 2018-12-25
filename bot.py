@@ -82,7 +82,7 @@ async def on_message(message):
         droplist = []
         for i in range(1, len(idcol)):
             if id == idcol[i]:
-                row = sheet.row_values(i)
+                row = sheet.row_values(i+1)
                 droplist.append(row)
 
         for row in droplist:
