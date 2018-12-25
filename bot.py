@@ -105,8 +105,10 @@ async def on_message(message):
 
     if message.content.lower().startswith('$test'):
         await client.send_message(message.channel, "testing".format(message))
-        msg = discord.Embed(title = "Title", description = "this supports [named links](https://discordapp.com) on top of the previously shown subset of markdown. ```\nyes, even code blocks```")
-        await client.send_message(message.channel, msg)
+        embed = discord.Embed(title="Tile", description="Desc", color=0x00ff00)
+        embed.add_field(name="Field1", value="hi", inline=False)
+        embed.add_field(name="Field2", value="hi2", inline=False)
+        await client.send_message(message.channel, embed=embed)
         await client.send_message(message.channel, "finished testing".format(message))
 
 
