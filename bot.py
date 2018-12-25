@@ -73,7 +73,7 @@ async def on_message(message):
         return
 
     if message.content.startswith('$help'):
-        msg = 'need to impliment'.format(message)
+        msg = '$help, $listdrops, $add, $lookup'.format(message)
         await client.send_message(message.channel, msg)
 
     if message.content.lower().startswith('$listdrops'):
