@@ -8,6 +8,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import pprint
 import datetime
 import traceback
+import git
+import os
 
 TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 
@@ -21,6 +23,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name('OsBot.json', scope)
 gspreadclient = gspread.authorize(creds)
 sheet = gspreadclient.open('CC Drops').sheet1
 pp = pprint.PrettyPrinter()
+g = git.cmd.Git(git_dir)
 
 
 def processMessage(str):
@@ -71,6 +74,14 @@ async def on_message(message):
     # we do not want the bot to reply to itself
     if message.author == client.user:
         return
+
+    if message.content.startswith('$update'):
+            await client.send_message(message.channel, 'updating...'.format(message))
+            await client.send_message(message.channel, 'pulling...'.format(message))
+            g.pull()
+            await client.send_message(message.channel, 'restarting...'.format(message))
+
+            os.execl(sys.executable, sys.executable, *sys.argv)
 
     if message.content.startswith('$help'):
         msg = '$help, $listdrops, $add, $lookup'.format(message)
