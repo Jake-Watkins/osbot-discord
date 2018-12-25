@@ -156,8 +156,7 @@ async def on_ready():
     print('------')
     for server in client.servers:
         for channel in server.channels:
-            if channel.permissions_for(client.user).send_messages:
-                await client.send_message(channel,  'started succesfully'.format(message))
+            await client.send_message(channel,  'started succesfully'.format(message))
     
 
 client.run(TOKEN)
