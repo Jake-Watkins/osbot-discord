@@ -98,7 +98,9 @@ async def on_message(message):
                 droplist.append(row)
 
         for row in droplist:
-            await client.send_message(message.channel, row)
+            new_row = []
+            new_row.append(row[1])
+            await client.send_message(message.channel, new_row)
 
 
     if message.content.lower().startswith('$add'):
@@ -156,7 +158,8 @@ async def on_ready():
     print('------')
     for server in client.servers:
         for channel in server.channels:
-            await client.send_message(channel,  'started succesfully'.format(message))
+            if channel.permissions_for(client.user).send_messages:  
+                await client.send_message(channel,  'started succesfully'.format(message))
     
 
 client.run(TOKEN)
