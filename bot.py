@@ -25,7 +25,7 @@ sheet = gspreadclient.open('CC Drops').sheet1
 pp = pprint.PrettyPrinter()
 cwd = os.getcwd()
 g = git.cmd.Git(cwd)
-
+message = ""
 
 def processMessage(str):
     link = str.split(" ")[-1]
@@ -157,7 +157,7 @@ async def on_ready():
     for server in client.servers:
         for channel in server.channels:
             if channel.permissions_for(client.user).send_messages:
-                await client.send_message(channel,  'started succesfully')
+                await client.send_message(channel,  'started succesfully'.format(message))
     
 
 client.run(TOKEN)
