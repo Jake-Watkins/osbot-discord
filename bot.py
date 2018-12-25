@@ -77,7 +77,7 @@ async def on_message(message):
         return
 
     if message.content.startswith('$update'):
-            client.change_presence(game = None, status = "updating", afk = True)
+            client.change_presence(game = None, status = discord.Status("updating"), afk = True)
             await client.send_message(message.channel, 'updating...'.format(message))
             await client.send_message(message.channel, 'pulling...'.format(message))
             g.pull ()
@@ -163,6 +163,6 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-    client.change_presence(game = "None", status = None, afk = True)
+    client.change_presence(game = None, status = None, afk = False)
 
 client.run(TOKEN)
