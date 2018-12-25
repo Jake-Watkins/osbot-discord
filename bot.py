@@ -79,8 +79,8 @@ async def on_message(message):
     if message.content.lower().startswith('$listdrops'):
         id = message.mentions[0].id
         idcol = sheet.col_values(1)
-        with urlopen(PriceUrl + id) as url:
-            data = json.loads(url.read().decode())
+        print(typeof(idcol))
+
 
     if message.content.lower().startswith('$add'):
         item, link = processMessage(message.content)
