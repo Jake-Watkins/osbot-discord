@@ -80,7 +80,7 @@ async def on_message(message):
             await client.send_message(message.channel, 'updating...'.format(message))
             await client.send_message(message.channel, 'pulling...'.format(message))
             g.pull ()
-            await client.send_message(message.channel, 'restarting...'.format(message))
+            await client.send_message(message.channel, 'restarting.....'.format(message))
 
             os.execl(sys.executable, sys.executable, *sys.argv)
 
