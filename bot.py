@@ -104,7 +104,7 @@ async def on_message(message):
 
 
     if message.content.lower().startswith('$test'):
-
+        await client.send_message(message.channel, "testing".format(message))
         msg = {
     "content": "this `supports` __a__ **subset** *of* ~~markdown~~ 😃 ```js\nfunction foo(bar) {\n  console.log(bar);\n}\n\nfoo(1);```",
     "embed": {
@@ -155,6 +155,7 @@ async def on_message(message):
     }
     }
         await client.send_message(message.channel, msg.format(message))
+        await client.send_message(message.channel, "finished testing".format(message))
 
 
     if message.content.lower().startswith('$add'):
