@@ -96,19 +96,17 @@ async def on_message(message):
             if id == idcol[i]:
                 row = sheet.row_values(i+1)
                 droplist.append(row)
-
+        embed = discord.Embed(title="Drops", description="", color=0x00ff00)
         for row in droplist:
             new_row = []
-            new_row.append("[" + row[1] + "](" + row[3] + ")")
+            embed.add_field(name="["+row[1] + "](" + row[3] + ")", value=row[2, inline=False)
             await client.send_message(message.channel, new_row)
 
+        await client.send_message(message.channel, embed=embed)
 
     if message.content.lower().startswith('$test'):
         await client.send_message(message.channel, "testing".format(message))
-        embed = discord.Embed(title="Tile", description="Desc", color=0x00ff00)
-        embed.add_field(name="Field1", value="hi", inline=False)
-        embed.add_field(name="Field2", value="hi2", inline=False)
-        await client.send_message(message.channel, embed=embed)
+
         await client.send_message(message.channel, "finished testing".format(message))
 
 
