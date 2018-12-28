@@ -25,20 +25,23 @@ sheet = gspreadclient.open('CC Drops').sheet1
 pp = pprint.PrettyPrinter()
 cwd = os.getcwd()
 g = git.cmd.Git(cwd)
+data = loadItems()
 message = ""
+
+def loadItems():
+    data = ""
+    with urlopen(ItemIdDBUrl) as url:
+        data = json.loads(url.read().decode())
+    return data
 
 def processMessage(str):
     link = str.split(" ")[-1]
     item = str.rsplit(' ', 1)[0].split(' ', 1)[1]
     return item, link
 
-def finditemId(str):
+def finditemId(data, str):
     id = -1
-    data = ""
-    with urlopen(ItemIdDBUrl) as url:
-        data = json.loads(url.read().decode())
-
-
+    
     for item in data:
         #print(data[item]['name'])
         if(data[item]['name'].lower()==str.lower()):
@@ -119,7 +122,7 @@ async def on_message(message):
             print('link is valid')
             ##check if valid item & price
 
-            ItemId = finditemId(item)
+            ItemId = finditemId(data, item)
 
             print('item is valid: '  + ItemId)
 
