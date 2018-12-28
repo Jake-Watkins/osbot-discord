@@ -11,13 +11,30 @@ import traceback
 import git
 import os
 
+TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 
+##probably want to move this to local storage to not make too many reqeusts
+##and just update once a day
+ItemIdDBUrl = "https://rsbuddy.com/exchange/names.json"
+PriceUrl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
+client = discord.Client()
+scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_name('OsBot.json', scope)
+gspreadclient = gspread.authorize(creds)
+sheet = gspreadclient.open('CC Drops').sheet1
+pp = pprint.PrettyPrinter()
+cwd = os.getcwd()
+g = git.cmd.Git(cwd)
+message = ""
 
 def loadItems():
     data = ""
     with urlopen(ItemIdDBUrl) as url:
         data = json.loads(url.read().decode())
     return data
+
+data = loadItems()
+
 
 def processMessage(str):
     link = str.split(" ")[-1]
@@ -153,21 +170,4 @@ async def on_ready():
     print('------')
     client.change_presence(game = None, status = None, afk = False)
 
-
-TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
-
-##probably want to move this to local storage to not make too many reqeusts
-##and just update once a day
-ItemIdDBUrl = "https://rsbuddy.com/exchange/names.json"
-PriceUrl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
-client = discord.Client()
-scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('OsBot.json', scope)
-gspreadclient = gspread.authorize(creds)
-sheet = gspreadclient.open('CC Drops').sheet1
-pp = pprint.PrettyPrinter()
-cwd = os.getcwd()
-g = git.cmd.Git(cwd)
-data = loadItems()
-message = ""
 client.run(TOKEN)
