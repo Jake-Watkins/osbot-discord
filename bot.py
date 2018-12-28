@@ -26,24 +26,24 @@ pp = pprint.PrettyPrinter()
 cwd = os.getcwd()
 g = git.cmd.Git(cwd)
 message = ""
-
 def loadItems():
     data = ""
     with urlopen(ItemIdDBUrl) as url:
         data = json.loads(url.read().decode())
-    return data
-
+    return datas
 data = loadItems()
 
+def splitMessage(str):
+    items = str.split(' ')
+    return items, len(items)
 
 def processMessage(str):
-    link = str.split(" ")[-1]
+    link = str.split(' ')[-1]
     item = str.rsplit(' ', 1)[0].split(' ', 1)[1]
     return item, link
 
 def finditemId(data, str):
     id = -1
-
     for item in data:
         #print(data[item]['name'])
         if(data[item]['name'].lower()==str.lower()):
@@ -81,6 +81,8 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    (items, length) = splitMessage(message)
+    
     if message.content.startswith('$update'):
             client.change_presence(game = discord.Game(name = "updating"), status = discord.Status("idle"), afk = True)
             await client.send_message(message.channel, 'updating...'.format(message))
