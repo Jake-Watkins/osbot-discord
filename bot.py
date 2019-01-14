@@ -2,6 +2,8 @@
 import discord
 from urllib.request import urlopen
 import sys
+import io
+import csv
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -17,6 +19,7 @@ TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 ##and just update once a day
 ItemIdDBUrl = "https://rsbuddy.com/exchange/names.json"
 PriceUrl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
+hiscoreURL = "http://services.runescape.com/m=hiscore_oldschool/index_lite.wx?player="
 client = discord.Client()
 scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('OsBot.json', scope)
@@ -75,6 +78,10 @@ def findValue(id):
     value = convertToNumber(price.lower().strip())
     return price, value
 
+def getstats(username):
+    with urlopen(hiscoreURL + username) as url:
+        data = json.loads(url.read().decode())
+    print(data)
 
 
 @client.event
@@ -163,8 +170,11 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
 
     if message.content.lower().startswith('$fastestlevel'):
-        username = items[1]
-        print(username)
+        if(length < 2):
+            await client.send_message(message.channel, "username not specified \n Usage: $fastestlevel rsname")
+        else:
+            username = items[1]
+            stats = getstats(username)
 
 @client.event
 async def on_ready():
