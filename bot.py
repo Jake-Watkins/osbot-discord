@@ -1,6 +1,6 @@
 #Version 0.1
 import discord
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 import sys
 import io
 import csv
@@ -12,6 +12,9 @@ import datetime
 import traceback
 import git
 import os
+import math
+from bs4 import BeautifulSoup as soup
+from operator import itemgetter
 
 TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 
@@ -19,7 +22,8 @@ TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 ##and just update once a day
 ItemIdDBUrl = "https://rsbuddy.com/exchange/names.json"
 PriceUrl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
-hiscoreURL = "http://services.runescape.com/m=hiscore_oldschool/index_lite.wx?player="
+hiscoreURL = "http://crystalmathlabs.com/tracker/track.php?player="
+updateCMLURL = "https://crystalmathlabs.com/tracker/update.php?player="
 client = discord.Client()
 scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('OsBot.json', scope)
@@ -28,7 +32,43 @@ sheet = gspreadclient.open('CC Drops').sheet1
 pp = pprint.PrettyPrinter()
 cwd = os.getcwd()
 g = git.cmd.Git(cwd)
+EHPURL = cwd+'/Supplies Calculator - Old School RuneScape XP Tracker - Crystal Math Labs.html'
 message = ""
+
+def getEHPrates():
+    EHPdict = {}
+    pagesoup = soup(open(EHPURL), "html.parser")
+    ttp = pagesoup.find("div",{"id":"ehprates"}).text
+    ttp = ttp[ttp.find('Attack'):]
+    ttp = ttp[ttp[1:].find('Attack')+1:]
+    ttp = ttp[ttp[1:].find('Attack')+1:]
+    skills = ttp.replace("None", "/h").split('/h')
+    skill = ''
+    val = []
+    for entry in skills:
+        if(entry== ''):
+            EHPdict[skill] = val
+        else:
+            if(entry[0].isalpha()):
+                if(skill!=''):
+                    EHPdict[skill] = val
+                line = entry.split(":")
+                skill = line[0]
+                if(skill!='Hitpoints'):
+                    val = [[0, int(line[2].split(' ')[1].replace(',',''))]]
+            else:
+                line = entry.split(":")
+                val.append([int(line[0].split(' ')[0].replace(',','')), int(line[1].split(' ')[1].replace(',',''))])
+    return EHPdict
+
+def loadXPtable():
+    table = []
+    xp = 0
+    for lvl in range(1,99):
+        diff = int(lvl + 300 * math.pow(2, float(lvl)/7))
+        xp+=diff
+        table.append(int(xp/4))
+    return table
 
 def loadItems():
     data = ""
@@ -36,6 +76,8 @@ def loadItems():
         data = json.loads(url.read().decode())
     return data
 
+xptable = loadXPtable()
+ehprates = getEHPrates()
 data = loadItems()
 
 def splitMessage(str):
@@ -56,6 +98,7 @@ def finditemId(data, str):
 
     print(str)
     return id
+
 def convertToNumber(st):
     multiplier = 1
     if(st[-1]=='k'):
@@ -69,7 +112,6 @@ def convertToNumber(st):
         st = st[:-1]
     return int(float(st) * multiplier)
 
-
 def findValue(id):
     price = 0
     with urlopen(PriceUrl + id) as url:
@@ -78,11 +120,48 @@ def findValue(id):
     value = convertToNumber(price.lower().strip())
     return price, value
 
-def getstats(username):
-    with urlopen(hiscoreURL + username) as url:
-        data = json.loads(url.read().decode())
-    print(data)
+def xpTillNextLevel(xp, lvl):
+    rtn = 0
+    try:
+        rtn = xptable[lvl-1] - xp
+    except IndexError:
+        print(lvl, " out of bounds")
+    return rtn
 
+def EHPTillNextLevel(item):
+    values = ehprates[item[0]]
+    xprate = values[0][1]
+    for i in range(0,len(values)):
+        if(item[2] > values[i][0]):
+            xprate = values[i][1]
+    return float(item[3])/float(xprate), xprate
+
+def getstats(username):
+    stats = []
+    r = Request(hiscoreURL + username, headers={'User-Agent': 'Mozilla/5.0'})
+    with urlopen(r) as url:
+        #data = json.loads(url.read().decode())
+        html = url.read()
+        pagesoup = soup(html, "html.parser")
+        stats_table = pagesoup.find("table",{"id":"stats_table"})
+        tr = stats_table.findAll("tr")
+        # 0 = title, 1 = overall, 25 = EHP
+        for i in range(2,25):
+            entries = tr[i].findAll("td")
+
+            item = [entries[0].a.text, int(entries[3]["title"].replace(',','')), int(entries[1]["title"].replace(',',''))]
+            if(item[1]<99):
+                item.append(xpTillNextLevel(item[2], item[1]))
+                (ehp, xp) = EHPTillNextLevel(item)
+                item.append(ehp)
+                item.append(xp)
+                stats.append(item)
+
+    return stats
+
+def updateCML(username):
+    r = Request(updateCMLURL + username, headers={'User-Agent': 'Mozilla/5.0'})
+    urlopen(r)
 
 @client.event
 async def on_message(message):
@@ -102,7 +181,7 @@ async def on_message(message):
             os.execl(sys.executable, sys.executable, *sys.argv)
 
     if message.content.startswith('$help'):
-        msg = '$help, $listdrops, $add, $lookup, $update'.format(message)
+        msg = '$help, $listdrops, $add, $lookup, $update, $fastestlevel'.format(message)
         await client.send_message(message.channel, msg)
 
     if message.content.lower().startswith('$listdrops'):
@@ -115,7 +194,6 @@ async def on_message(message):
                 droplist.append(row)
         embed = discord.Embed(title="Drops", description="", color=0x00ff00)
         for row in droplist:
-            new_row = []
             embed.add_field(value=row[2] +" : ["+row[4] + "](" + row[3] + ")", name=row[1], inline=False)
 
         await client.send_message(message.channel, embed=embed)
@@ -173,8 +251,15 @@ async def on_message(message):
         if(length < 2):
             await client.send_message(message.channel, "username not specified \n Usage: $fastestlevel rsname")
         else:
-            username = items[1]
-            stats = getstats(username)
+            username = message.content.split(' ',1)[1]
+            updateCML(username.replace(' ','_'))
+            stats = getstats(username.replace(' ','+'))
+            stats = sorted(stats, key = itemgetter(4))
+            embed = discord.Embed(title="EHP until level", description="Max effeciency minutes until level", color=0x00ff00)
+            for row in stats:
+                embed.add_field(value=format(row[3], ",d")+"xp for " + format(round(row[4]*60,2),",.2f") + " minutes at " + format(row[5],",d") + " xp/h", name=row[0], inline=False)
+
+            await client.send_message(message.channel, embed=embed)
 
 @client.event
 async def on_ready():
