@@ -281,6 +281,8 @@ async def on_message(message):
         for i in range(1, len(namecol)):
             try:
                 print("updating " + namecol[i] + " - " + str(getprice(namecol[i])))
+                if(listSheet.cell(5,i))=="FALSE"):
+                    print("to be updated")
             except:
                 traceback.print_exc()
                 await client.send_message(message.channel, "could not find item "+ namecol[i])
