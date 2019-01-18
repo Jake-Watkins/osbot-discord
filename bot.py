@@ -22,6 +22,7 @@ TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
 ##and just update once a day
 ItemIdDBUrl = "https://rsbuddy.com/exchange/names.json"
 PriceUrl = "http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
+getracker = "https://ge-tracker.com/item/"
 hiscoreURL = "http://crystalmathlabs.com/tracker/track.php?player="
 updateCMLURL = "https://crystalmathlabs.com/tracker/update.php?player="
 client = discord.Client()
@@ -29,6 +30,7 @@ scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/aut
 creds = ServiceAccountCredentials.from_json_keyfile_name('OsBot.json', scope)
 gspreadclient = gspread.authorize(creds)
 sheet = gspreadclient.open('CC Drops').sheet1
+listSheet = gspreadclient.open('to get list').sheet1
 pp = pprint.PrettyPrinter()
 cwd = os.getcwd()
 g = git.cmd.Git(cwd)
@@ -112,12 +114,24 @@ def convertToNumber(st):
         st = st[:-1]
     return int(float(st) * multiplier)
 
+def getprice(id):
+    r = Request(getracker + id.replace(' ', '-'), headers={'User-Agent': 'Mozilla/5.0'})
+    with urlopen(r) as url:
+        #data = json.loads(url.read().decode())
+        html = url.read()
+        pagesoup = soup(html, "html.parser")
+        val = pagesoup.find("td",{"id":"item_stats_overall"}).text
+        return (int)val.replace(',','')
+
+
 def findValue(id):
     price = 0
     with urlopen(PriceUrl + id) as url:
         data = json.loads(url.read().decode())
     price = str(data['item']['current']['price'])
     value = convertToNumber(price.lower().strip())
+
+
     return price, value
 
 def xpTillNextLevel(xp, lvl):
@@ -260,6 +274,9 @@ async def on_message(message):
                 embed.add_field(value=format(row[3], ",d")+"xp for " + format(round(row[4]*60,2),",.2f") + " minutes at " + format(row[5],",d") + " xp/h", name=row[0], inline=False)
 
             await client.send_message(message.channel, embed=embed)
+
+    if message.content.lower().startswith('$foo'):
+        await client.send_message(message.channel, getprice(message.content.split(' ',1)[1]))
 
 @client.event
 async def on_ready():
