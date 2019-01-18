@@ -280,7 +280,7 @@ async def on_message(message):
         pricecol = 3
         for i in range(1, len(namecol)):
             print("updating" + namecol[i].value)
-            listSheet.update_cell(pricecol, i, getprice(namecol[i].value))
+            #listSheet.update_cell(pricecol, i, getprice(namecol[i]))
         await client.send_message(message.channel, "updated")
 
 @client.event
