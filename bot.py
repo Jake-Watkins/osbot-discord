@@ -276,7 +276,11 @@ async def on_message(message):
             await client.send_message(message.channel, embed=embed)
 
     if message.content.lower().startswith('$foo'):
-        await client.send_message(message.channel, getprice(message.content.split(' ',1)[1]))
+        namecol = listSheet.col_values(1)
+        pricecol = 3
+        for i in range(1, len(namecol)):
+            listSheet.update_cell(pricecol, i, getprice(message.content.split(' ',1)[1]))
+        await client.send_message(message.channel, "updated")
 
 @client.event
 async def on_ready():
