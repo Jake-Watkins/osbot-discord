@@ -120,7 +120,7 @@ def getprice(id):
         #data = json.loads(url.read().decode())
         html = url.read()
         pagesoup = soup(html, "html.parser")
-        val = pagesoup.findAll("td",{"id":"item_stats_overall"})
+        val = pagesoup.findAll("div",{"id":"item_statistics"})
         print(len(val))
         return (int)(val[0].text.replace(',',''))
 
