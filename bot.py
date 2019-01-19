@@ -121,7 +121,7 @@ def getprice(id):
         pagesoup = soup(html, "html.parser")
         td = pagesoup.find("td",{"id":"item_stat_overall"}).text
         return (int)(td.replace(",",""))
-
+    return 0
 
 def findValue(id):
     price = 0
