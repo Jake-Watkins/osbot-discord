@@ -16,7 +16,7 @@ import math
 from bs4 import BeautifulSoup as soup
 from operator import itemgetter
 
-TOKEN = 'NTIzOTUxNDczMjEwNTU2NDE2.DvhEDA.cBUM5PjFaVPgDWLd-PNVXP3qsz8'
+TOKEN = 'TOKEN'
 
 ##probably want to move this to local storage to not make too many reqeusts
 ##and just update once a day
